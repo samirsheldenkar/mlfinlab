@@ -400,7 +400,7 @@ Bringing it all together, the code looks like this:
 Implementation
 ##############
 
-.. automodule:: mlfinlab.portfolio_optimization.mean_variance
+.. automodule:: mlfinlab.portfolio_optimization.modern_portfolio_theory.mean_variance
 
     .. autoclass:: MeanVarianceOptimisation
         :members:
@@ -447,6 +447,10 @@ Research Notebooks
     `Patreon <https://www.patreon.com/HudsonThames>`_.
 
 The following research notebooks provide a more detailed exploration of the algorithm.
+
+* `Mean-Variance Portfolio Optimization`_
+
+.. _Mean-Variance Portfolio Optimization: https://github.com/Hudson-and-Thames-Clients/research/blob/master/Portfolio%20Optimisation%20Tutorials/Mean%20Variance%20Optimisation%20(MVO)/MVO%20Tutorial%20Notebook.ipynb
 
 * `Chapter 16 Exercise Notebook`_
 

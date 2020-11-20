@@ -37,7 +37,7 @@ From risk perspective, the answer is no [...], hence the propounded distance of 
    papers that prove the above statements.
 
 Spearman’s Rho
-==============
+##############
 
 Following the work of Marti:
 
@@ -65,14 +65,14 @@ Our method is a wrapper for the scipy spearmanr function. For more details about
 please visit `scipy documentation <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.spearmanr.html>`_.
 
 Implementation
-##############
+**************
 
 .. py:currentmodule:: mlfinlab.codependence.gnpr_distance
 
 .. autofunction:: spearmans_rho
 
 Generic Parametric Representation (GPR) distance
-================================================
+################################################
 
 Theoretically, Marty defines the distance :math:`d_{\Theta}` between two random variables as:
 
@@ -118,12 +118,12 @@ GPR fails to capture this information".
 
 
 Implementation
-##############
+**************
 
 .. autofunction:: gpr_distance
 
 Generic Non-Parametric Representation (GNPR) distance
-=====================================================
+#####################################################
 
 The statistical estimate of the distance :math:`\tilde{d}_{\Theta}` working on realizations of the i.i.d. random variables
 is defined by the author as:
@@ -168,13 +168,36 @@ In a supervised setting, one could select an estimate :math:`\hat{\Theta}` of th
 optimizing some loss function by techniques such as cross-validation. Yet, the lack of a clear loss function makes
 the estimation of :math:`\Theta^{*}` difficult in an unsupervised setting".
 
+.. note::
+
+    The implementation of GNPR in the MlFinLab package was adjusted so that :math:`\tilde{d}_{0}^{2}`
+    (dependence information distance) is being calculated using the 1D Optimal Transport Distance
+    following the example in the
+    `POT package documentation <https://pythonot.github.io/auto_examples/plot_OT_1D.html#sphx-glr-auto-examples-plot-ot-1d-py>`_.
+    This solution was proposed by Marti.
+
+Distributions of random variables are approximated using histograms with a given number of bins as input.
+
+Optimal Transport Distance is then obtained from the Optimal Transportation Matrix (OTM) using
+the Loss Matrix (M) as shown in `Optimal Transport blog post by Marti <https://gmarti.gitlab.io/qfin/2020/06/25/copula-optimal-transport-dependence.html>`_:
+
+.. math::
+
+    \tilde{d}_{0}^{2} = tr (OT^{T} * M)
+
+where :math:`tr( \cdot )` is trace of a matrix and :math:`\cdot^{T}` is a transposed matrix.
+
+This approach solves the issue of defining support for underlying distributions and choosing a
+number of bins.
+
+
 Implementation
-##############
+**************
 
 .. autofunction:: gnpr_distance
 
 Examples
-========
+########
 
 The following example shows how the above functions can be used:
 
@@ -203,10 +226,10 @@ The following example shows how the above functions can be used:
    # Calculating the GNPR distance between all time series with both
    # distribution and dependence information
    gnpr_matrix = get_dependence_matrix(data, dependence_method='gnpr_distance',
-                                       ftheta=0.5)
+                                       theta=0.5)
 
 Research Notebooks
-##################
+******************
 
 .. note::
     This and other accompanying Jupyter Notebook Tutorials are now available via the respective tier on

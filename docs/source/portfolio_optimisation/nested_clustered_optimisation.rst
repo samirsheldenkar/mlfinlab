@@ -123,12 +123,16 @@ This method allows creating a random vector of means and a random covariance mat
 Implementation
 ##############
 
-.. automodule:: mlfinlab.portfolio_optimization.nco
+.. automodule:: mlfinlab.portfolio_optimization.clustering.nco
 
-    .. autoclass:: NCO
+    .. autoclass:: NestedClusteredOptimisation
         :members:
 
         .. automethod:: __init__
+
+.. note::
+    The NCO algorithm involves taking inverse of the covariance matrix. If a singular covariance matrix is encountered, then a pseudo-inverse (Moore-Penrose Inverse) will be calculated instead.
+    Please refer to the following Numpy documentation for more details - `pinv() <https://numpy.org/doc/stable/reference/generated/numpy.linalg.pinv.html>`_.
 
 Example Code
 ############
@@ -137,7 +141,7 @@ Below is an example of how to use the package functions to calculate risk metric
 .. code-block::
 
     import pandas as pd
-    from mlfinlab.portfolio_optimization import NCO
+    from mlfinlab.portfolio_optimization.clustering import NestedClusteredOptimisation
 
     # Import dataframe of returns for assets in a portfolio
     assets_returns = pd.read_csv(DATA_PATH, index_col='Date', parse_dates=True)
@@ -149,7 +153,7 @@ Below is an example of how to use the package functions to calculate risk metric
     assets_mean = assets_returns.mean()
 
     # Class that contains needed functions
-    nco = NCO()
+    nco = NestedClusteredOptimisation()
 
     # Find optimal weights using the NCO algorithm
     w_nco = nco.allocate_nco(assets_cov, assets_mean)

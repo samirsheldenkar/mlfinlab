@@ -74,7 +74,7 @@ visit `sklearn documentation <https://scikit-learn.org/stable/modules/generated/
 Implementation
 **************
 
-.. py:currentmodule:: mlfinlab.portfolio_optimization.risk_estimators
+.. py:currentmodule:: mlfinlab.portfolio_optimization.estimators.risk_estimators
 
 .. autoclass:: RiskEstimators
    :members: __init__, minimum_covariance_determinant
@@ -241,6 +241,7 @@ De-noising and De-toning Covariance/Correlation Matrix
 Two methods for de-noising are implemented in this module:
 
 - Constant Residual Eigenvalue Method
+- Spectral Clustering Filter Method
 - Targeted Shrinkage
 
 Constant Residual Eigenvalue De-noising Method
@@ -343,6 +344,34 @@ The de-noising function works as follows:
 
 (If the correlation matrix is given as an input, the first and the last steps of the algorithm are omitted)
 
+Spectral Clustering Filtering Method
+************************************
+
+The main idea behind spectral clustering is to remove the noise-related eigenvalues from an empirical correlation matrix,
+the method in which this is achieved is similar to the Constant Residual Eigenvalue de-noising method, the only difference
+is that instead of setting the eigenvalues which are below the theoretical value to their average value, they are set to zero
+in an attempt to remove the effects of those eigenvalues that are consistent with the null hypothesis of uncorrelated random variables.
+
+Let us consider :math:`n` independent random variables with finite variance and :math:`T` records each. Random matrix
+theory allows to prove that in the :math:`\lim\limits_{n \to \infty} T`, with a fixed ratio :math:`Q = T/n \geq 1`, the
+eigenvalues of the sample correlation matrix cannot be larger than
+
+.. math::
+    \lambda_{max} = \sigma^2(1 + \frac{1}{Q} + 2\sqrt{\frac{1}{Q}})
+
+where :math:`\sigma^2 = 1` for correlation matrices, once achieved we set any eigenvalues above this threshold to :math:`0`.
+For example, we have a set of 5 eigenvalues sorted in the descending order ( :math:`\lambda_1` ... :math:`\lambda_5` ),
+3 of which are below the maximum theoretical value, then we set
+
+.. math::
+    \lambda_3^{NEW} = \lambda_4^{NEW} = \lambda_5^{NEW} = 0
+
+.. tip::
+
+    Spectral Filtering techniques are based on the comparison between the spectrum of the sample correlation matrix and
+    the spectrum expected for a random matrix. for more information about Random matrix theory and spectral filtering
+    procedures check out `Michele Tumminello's research paper <https://www.researchgate.net/publication/5915427>`__.
+
 De-toning
 *********
 
@@ -401,6 +430,49 @@ Implementation
 
 ----
 
+Hierarchical Cluster Filtering
+##############################
+
+Hierarchical Clustering, unlike K-means Clustering, does not create multiple clusters of identical size, nor does it
+require a pre-defined number of clusters. Of the two different types of hierarchical clustering - Agglomerative and
+Divisive - Agglomerative, or bottom-up clustering is used here.
+
+Agglomerative Clustering assigns each observation to its own individual cluster before iteratively joining the two
+most similar clusters. This process repeats until only a singular cluster remains.
+
+Given a positive empirical correlation matrix, :math:`C` generated using :math:`n` features, the procedure given below
+returns as an output a rooted tree and a filtered correlation matrix :math:`C^<` of elements :math:`c^<_{ij}`.
+
+First, set :math:`C = C^<`.
+
+Then, beginning with the most highly correlated features (clusters) :math:`h` and :math:`k \in C` and the correlation
+between them, :math:`c_{hk}`, one sets the elements :math:`c^<_{ij} = c^<_{ji} = c_{hk}`.
+
+The matrix :math:`C^<` is then redefined such that:
+
+.. math::
+    \begin{cases} c^<_{qj} = f(c^<_{hj}, c^<_{kj}) & where \ j \notin h \ and \ j \notin k \\ c^<_{ij} = c^<_{ij} & otherwise \end{cases}
+
+where :math:`f(c^<_{hj}, c^<_{kj})` is any distance metric. In effect, merging the clusters :math:`h` and :math:`k`.
+These steps are then completed for the next two most similar clusters, and are repeated for a total
+of :math:`n-1` iterations; until only a single cluster remains.
+
+
+.. tip::
+    Divisive Hierarchical clustering works in the opposite way. It starts with one single cluster wrapping all
+    data points and divides the cluster at each step of its iteration until it ends with n clusters. For more information
+    on Hierarchical Procedures for correlation matrix filtering, Check Michele Tumminello et al research paper
+    `here <https://arxiv.org/pdf/0809.4615.pdf>`__.
+
+
+Implementation
+**************
+
+.. autoclass:: RiskEstimators
+   :noindex:
+   :members: filter_corr_hierarchical
+
+
 Example Code
 ############
 
@@ -408,7 +480,7 @@ Example Code
 
     import pandas as pd
     import numpy as np
-    from mlfinlab.portfolio_optimization import RiskEstimators, ReturnsEstimators
+    from mlfinlab.portfolio_optimization.estimators import RiskEstimators, ReturnsEstimators
 
     # Import price data
     stock_returns = pd.read_csv(DATA_PATH, index_col='Date', parse_dates=True)
@@ -419,7 +491,7 @@ Example Code
 
     # Finding the MCD estimator on price data
     min_cov_det = risk_estimators.minimum_covariance_determinant(stock_prices, price_data=True)
-	
+
     # Finding the Empirical Covariance on price data
     empirical_cov = risk_estimators.empirical_covariance(stock_prices, price_data=True)
 
@@ -442,7 +514,7 @@ Example Code
 
     # Series of returns from series of prices
     stock_returns = ret_est.calculate_returns(stock_prices)
-	
+
     # Finding the simple covariance matrix from a series of returns
     cov_matrix = stock_returns.cov()
 
@@ -450,6 +522,10 @@ Example Code
     const_resid_denoised = risk_estimators.denoise_covariance(cov_matrix, tn_relation,
                                                               denoise_method='const_resid_eigen',
                                                               detone=False, kde_bwidth=kde_bwidth)
+
+    # Finding the Spectral Clustering De-noised Сovariance matrix
+    const_resid_denoised = risk_estimators.denoise_covariance(cov_matrix, tn_relation,
+                                                              denoise_method='spectral')
 
     # Finding the Targeted Shrinkage De-noised Сovariance matrix
     targ_shrink_denoised = risk_estimators.denoise_covariance(cov_matrix, tn_relation,
@@ -461,6 +537,10 @@ Example Code
                                                              denoise_method='const_resid_eigen',
                                                              detone=True, market_component=1,
                                                              kde_bwidth=kde_bwidth)
+
+    # Finding the Hierarchical Clustering Filtered Correlation matrix
+    hierarchical_filtered = risk_estimators.filter_corr_hierarchical(cov_matrix, method='complete',
+                                                                     draw_plot=False)
 
 Research Notebooks
 ##################

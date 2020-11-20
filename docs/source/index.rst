@@ -86,7 +86,7 @@ finance is not a plug-and-play subject as it relates to machine learning.
 MlFinLab provides access to the latest cutting edges methods. MlFinLab is thus essential for quants who want to be
 ahead of the technology rather than being replaced by it."
 
-\- `Dr. Thomas Raffinot <https://www.linkedin.com/in/thomas-raffinot-b75734b/>`_, Financial Data Scientist at ENGIE Global Markets
+\- `Dr. Thomas Raffinot <https://www.linkedin.com/in/thomas-raffinot-b75734b/>`_, Lead Data Scientist at AXA Investment Managers
 
 ----
 
@@ -276,6 +276,19 @@ This project is licensed under an all rights reserved licence.
 
 .. toctree::
     :maxdepth: 2
+    :caption: Data Generation
+    :hidden:
+
+    data_generation/introduction
+    data_generation/corrgan
+    data_generation/vine_methods
+    data_generation/correlated_random_walks
+    data_generation/hcbm
+    data_generation/bootstrap
+    data_generation/data_verification
+
+.. toctree::
+    :maxdepth: 2
     :caption: Labeling
     :hidden:
 
@@ -304,11 +317,25 @@ This project is licensed under an all rights reserved licence.
 
 .. toctree::
     :maxdepth: 2
+    :caption: Networks
+    :hidden:
+
+    networks/introduction
+    networks/mst
+    networks/almst
+    networks/pmfg
+    networks/visualisations
+    networks/dash
+
+
+.. toctree::
+    :maxdepth: 2
     :caption: Clustering
     :hidden:
 
     implementations/onc
     implementations/feature_clusters
+    implementations/hierarchical_clustering
 
 .. toctree::
     :maxdepth: 2
@@ -320,18 +347,45 @@ This project is licensed under an all rights reserved licence.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Portfolio Optimization
+    :caption: Bayesian Models
     :hidden:
 
-    portfolio_optimisation/risk_metrics
-    portfolio_optimisation/returns_estimation
-    portfolio_optimisation/risk_estimators
-    portfolio_optimisation/mean_variance
-    portfolio_optimisation/critical_line_algorithm
+    portfolio_optimisation/black_litterman
+    portfolio_optimisation/entropy_pooling
+    portfolio_optimisation/robust_bayesian_allocation
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Clustering Models
+    :hidden:
+
     portfolio_optimisation/hierarchical_risk_parity
     portfolio_optimisation/hierarchical_equal_risk_contribution
     portfolio_optimisation/nested_clustered_optimisation
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Estimators
+    :hidden:
+
+    portfolio_optimisation/risk_estimators
+    portfolio_optimisation/returns_estimators
     portfolio_optimisation/theory_implied_correlation
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Modern Portfolio Theory
+    :hidden:
+
+    portfolio_optimisation/critical_line_algorithm
+    portfolio_optimisation/mean_variance
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Utils
+    :hidden:
+
+    portfolio_optimisation/risk_metrics
 
 .. toctree::
     :maxdepth: 5
@@ -344,6 +398,14 @@ This project is licensed under an all rights reserved licence.
     online_portfolio_selection/mean_reversion
     online_portfolio_selection/pattern_matching
     online_portfolio_selection/universal_portfolio
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Optimal Mean Reversion
+    :hidden:
+
+    optimal_mean_reversion/introduction
+    optimal_mean_reversion/ou_model
 
 .. toctree::
     :maxdepth: 2
